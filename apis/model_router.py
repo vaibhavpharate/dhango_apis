@@ -1,4 +1,4 @@
-from .models import SiteConfig
+from .models import SiteConfig, VDbApi
 
 class MyDBRouter(object):
 
@@ -6,10 +6,15 @@ class MyDBRouter(object):
         """ reading SomeModel from otherdb """
         if model == SiteConfig:
             return 'site_configs'
+        elif model == VDbApi:
+            return 'data_api'
         return None
 
     def db_for_write(self, model, **hints):
         """ writing SomeModel to otherdb """
         if model == SiteConfig:
             return 'site_configs'
+        elif model == VDbApi:
+            return 'data_api'
         return None
+

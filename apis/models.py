@@ -90,3 +90,25 @@ class SiteConfig(models.Model):
     def __str__(self) -> str:
         return self.site_name
 
+
+class VDbApi(models.Model):
+    site_name = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    wind_speed_10m_mps = models.FloatField(blank=True, null=True)
+    wind_direction_in_deg = models.FloatField(blank=True, null=True)
+    temp_c = models.FloatField(blank=True, null=True)
+    nowcast_ghi_wpm2 = models.FloatField(blank=True, null=True)
+    swdown2 = models.FloatField(blank=True, null=True)
+    cs_data = models.FloatField(blank=True, null=True)
+    ci_data = models.FloatField(blank=True, null=True)
+    tz = models.TextField(blank=True, null=True)
+    ct_data = models.FloatField(blank=True, null=True)
+    ct_flag_data = models.TextField(blank=True, null=True)
+    forecast_method = models.TextField(blank=True, null=True)
+    log_ts = models.TextField(blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'v_db_api'
+    def __str__(self) -> str:
+        return self.site_name

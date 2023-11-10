@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 import pandas as pd
 import numpy as np
+from datetime import datetime as dtt
+from django.utils import timezone
+import datetime
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
@@ -20,7 +23,11 @@ from django.conf import settings
 
 # import models and Forms
 from .forms import ClientsForm, SiteConfigForm
-from .models import Clients,SiteConfig,ClientPlans,Plans
+from .models import Clients,SiteConfig,ClientPlans,Plans, VDbApi
+from .serializers import VBADataSerializer
+from rest_framework.renderers import JSONRenderer
+
+# datetime.datetime.now(tz=timezone.utc) # you can use this value
 
 
 @login_required(login_url='admin_login')
@@ -104,3 +111,33 @@ def create_client(request):
     context = {'form': form}
     return render(request=request,template_name='apis/create_client.html',context=context)
 
+
+def custom_403_view(request, exception=None):
+    return render(request, 'apis/403.html', status=403)
+
+@csrf_protect
+def client_login(request):
+    pass
+
+@login_required
+def client_homepage(request):
+    pass
+
+
+
+@login_required(login_url='admin_login')
+def premium(request):
+    user = request.user
+    user_name = request.user.username
+    plan_id = user.plans_id
+    # print(user.plans_id)
+    if plan_id.lower() == "basic":
+        return redirect('403')
+    else:
+        print("Premium")
+    sites = list(SiteConfig.objects.filter(client_name = user_name).values_list('site_name',flat=True))
+    date_now = dtt.now()
+    now_api = VDbApi.objects.filter(site_name__in = sites,timestamp__gte = date_now ).values()
+    data_serialize = VBADataSerializer(now_api,many=True)
+    js_data = JSONRenderer().render(data_serialize.data)
+    return render(request,template_name='apis/sample.html',context={'data':js_data})
